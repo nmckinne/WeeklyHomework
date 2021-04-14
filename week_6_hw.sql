@@ -39,3 +39,42 @@ ORDER BY COUNT(film_actor.film_id) DESC
 --The data is then grouped by actor id and then number of films for each actor is counted using COUNT of the film ids.  The result is stored as number of films.
 --The data is then sorted by the number of films per actor in descending order. 
 
+--6. Write an explain plan for 4 and 5. Show the queries and explain what is happening in each one. 
+
+--7. What is the average rental rate per genre?
+SELECT film_category.category_id, category.name, AVG(film.rental_rate) as avg_rental_rate
+FROM film_category
+JOIN film ON film_category.film_id = film.film_id
+JOIN category ON film_category.category_id = category.category_id
+GROUP BY film_category.category_id, category.name
+
+--8. How many films were returned late? Early? On time?
+SELECT COUNT(CASE WHEN DATE_PART('day',rental.return_date-rental.rental_date)>film.rental_duration then 1 else null end) as late_return,
+       COUNT(CASE WHEN DATE_PART('day',rental.return_date-rental.rental_date)<film.rental_duration then 1 else null end) as early_return,
+	   COUNT(CASE WHEN DATE_PART('day',rental.return_date-rental.rental_date)=film.rental_duration then 1 else null end) as on_time_return
+FROM film
+JOIN inventory ON inventory.film_id = film.film_id
+JOIN rental ON rental.inventory_id = inventory.inventory_id
+
+--9. What categories are the most rented and what are their total sales?
+SELECT film_category.category_id, category.name, SUM(rental.inventory_id) as total_rentals, SUM(payment.amount) AS total_sales 
+FROM film_category
+JOIN inventory ON inventory.film_id = film_category.film_id
+JOIN category ON film_category.category_id = category.category_id
+JOIN rental ON rental.inventory_id = inventory.inventory_id
+JOIN payment ON payment.rental_id = rental.rental_id
+GROUP BY film_category.category_id, category.name
+ORDER BY SUM(rental.inventory_id) DESC
+
+--10. Create a view for 8 and a view for 9. Be sure to name them appropriately. 
+
+--Write a query that shows how many films were rented each month. Group them by category and month. 
+SELECT category.name, COUNT(CASE WHEN EXTRACT(MONTH from rental_date)=5 then 1 else null end) as rental_month_may,
+       COUNT(CASE WHEN EXTRACT(MONTH from rental_date)=6 then 1 else null end) as rental_month_june,
+	   COUNT(CASE WHEN EXTRACT(MONTH from rental_date)=7 then 1 else null end) as rental_month_july,
+	   COUNT(CASE WHEN EXTRACT(MONTH from rental_date)=8 then 1 else null end) as rental_month_august
+FROM rental
+JOIN inventory ON rental.inventory_id = inventory.inventory_id
+JOIN film_category ON film_category.film_id = inventory.film_id
+JOIN category ON category.category_id = film_category.category_id
+GROUP BY category.category_id
