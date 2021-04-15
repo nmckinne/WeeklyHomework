@@ -1,7 +1,7 @@
 --1.	Show all customers whose last names start with T. Order them by first name from A-Z.
 SELECT customer_id, first_name, last_name
 FROM customer
-WHERE last_name 'T%'
+WHERE last_name LIKE 'T%'
 ORDER BY first_name ; 
 --This query select the columns showing the customer id, first and last name of each customer from the customer table and then puts them in alpahbetical order by first name. 
 
