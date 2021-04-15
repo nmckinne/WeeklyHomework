@@ -12,10 +12,14 @@ WHERE rental_date BETWEEN '2005-05-28' AND '2005-06-01'
 --This query selects all fields from the rental table and then only selects the information for those films that were rented between May 28 2005 and June 1st 2005.
 
 --3. How would you determine which movies are rented the most?
-SELECT inventory_id, COUNT(rental_id) AS rental_count
+SELECT rental.inventory_id, COUNT(rental.rental_id) AS rental_count, film.title
 FROM rental
-GROUP BY inventory_id
-ORDER BY COUNT(inventory_id) DESC
+JOIN inventory
+ON rental.inventory_id = inventory.inventory_id
+JOIN film
+ON inventory.film_id = film.film_id
+GROUP BY rental.inventory_id, film.title
+ORDER BY COUNT(rental.inventory_id) DESC
 --This query selects inventory_id and counts the number of rentals for each inventory id. The result is stored in a new column titled rental count. In order to do this, the data must be grouped by inventory id. 
 --Finally, the data is ordered by the rental_count in descending order.  This way, you can easily see which movies are rented the most. 
 
