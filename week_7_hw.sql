@@ -95,6 +95,40 @@ ON f.rental_rate < avg_rate.average_rental_rate
 ORDER BY rental_rate DESC
 
 /*8.	Perform an explain plan on 6 and 7, and describe 
-what you’re seeing and important ways they differ. */
+what you’re seeing and important ways they differ. 
+
+For question 6, you are using an aggregate function to average
+over the rental_column of the film table.  That returns one value
+for the average rental rate of all films.  Next, you are comparing 
+every films rental rate the to average and only returning those values
+that are less than the average rental rate.
+
+For question 7, you are first selecting the average of all the rental
+rate values and essentially saving that in memory and then you are joining 
+the result of that subquery to your original table but only keeping those
+values that have a rental rate less than the average rental rate.*/
+
+/*9.	With a window function, write a query that shows the film, its duration, 
+and what percentile the duration fits into. This may help 
+https://mode.com/sql-tutorial/sql-window-functions/#rank-and-dense_rank */
+
+SELECT f.title, f.length,
+	NTILE(100) OVER
+         (ORDER BY f.length)
+         AS percentile
+FROM film AS f
+
+
+/* 10.	In under 100 words, explain what the difference is between set-based and procedural programming. 
+Be sure to specify which sql and python are.
+
+Procedural programming is done with languages that use a sequence of operations or procedures
+to produce the desired results, however, set-based programming processes entire tables or result sets
+together instead of doing row by row.  It is therefore more efficient. SQL is typically set-based
+because you are performing functions on the entire database, while python is procedural based and 
+uses loops and conditional statements to perform tasks. 
+*/
+
+
 
 
